@@ -1,0 +1,53 @@
+<div>
+
+    <form>
+
+        <!-- selection du livret  -->
+        <div class="mb-3">
+            <label for="disabledSelect" class="form-label">Type de Livret/Compte</label>
+            <select id="disabledSelect" class="form-select">
+                <option>Livret A</option>
+                <option>Livret de développement durable et solidaire (LDDS)</option>
+                <option>Livret d'épargne populaire (LEP)</option>
+                <option>Plan d'épargne logement (PEL)</option>
+            </select>
+        </div>
+
+        <!-- input montant du capital -->
+        <div class="mb-3">
+            <div class="form-group">
+                <label for="exampleInputCapital">Capital initial</label>
+                <input type="text" class="form-control" id="exampleInputCapital" placeholder="Capital minimum de : ">
+            </div>
+        </div>
+
+        <!-- input montant du placement -->
+        <div class="mb-3">
+            <div class="form-group">
+                <label for="exampleInputSavingsAmount">Montant épargné</label>
+                <input type="text" class="form-control" id="exampleInputSavingsAmount" placeholder="€">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div>
+                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked>
+                <label class="btn" for="option5">Mois</label>
+
+                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off">
+                <label class="btn" for="option6">Année</label>
+            </div>
+        </div>
+
+        <!-- Durée de placement  -->
+        <div class="mb-3">
+            <div class="form-group">
+                <label for="exampleInputYears">Durée du placement :</label>
+                <input type="number" min="0" max="20" class="form-control" id="exampleInputYears" placeholder="ans">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Calculer</button>
+    </form>
+
+</div>
