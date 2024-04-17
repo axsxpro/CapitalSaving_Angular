@@ -5,29 +5,27 @@
         <!-- selection du livret  -->
         <div class="mb-3">
             <label for="disabledSelect" class="form-label">Type de Livret/Compte</label>
-            <select id="disabledSelect" class="form-select" (change)="updatePlaceholder($event)">
-                <option value="10">Livret A</option>
-                <option value="10">Livret de développement durable et solidaire (LDDS)</option>
-                <option value="30">Livret d'épargne populaire (LEP)</option>
-                <option value="225">Plan d'épargne logement (PEL)</option>
+            <select id="disabledSelect" class="form-select" (change)="updateMinEpargne($event)">
+                <option value=10>Livret A</option>
+                <option value=10>Livret de développement durable et solidaire (LDDS)</option>
+                <option value=30>Livret d'épargne populaire (LEP)</option>
+                <option value=225>Plan d'épargne logement (PEL)</option>
             </select>
         </div>
 
         <!-- input montant du capital -->
         <div class="mb-3">
             <div class="form-group">
-                <label for="exampleInputCapital">Capital initial</label>
-                <input formControlName="capital" type="text" class="form-control" id="exampleInputCapital"
-                    [placeholder]="'Capital minimum de : ' + livretMontantInitial[selectedLivret] + '€'">
+                <label for="inputCapital">Capital initial</label>
+                <input formControlName="capital" type="text" class="form-control" id="inputCapital" placeholder="€">
             </div>
         </div>
 
         <!-- input montant du placement -->
         <div class="mb-3">
             <div class="form-group">
-                <label for="exampleInputSavingAmount">Montant épargné</label>
-                <input formControlName="savingsAmount" type="text" class="form-control" id="exampleInputSavingAmount"
-                    placeholder="€">
+                <label for="inputSavingAmount">Montant épargné</label>
+                <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount" placeholder="€">
             </div>
         </div>
 
@@ -47,9 +45,8 @@
         <!-- Durée de placement  -->
         <div class="mb-3">
             <div class="form-group">
-                <label for="exampleInputYears">Durée du placement :</label>
-                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control"
-                    id="exampleInputYears" placeholder="ans">
+                <label for="inputYears">Durée du placement :</label>
+                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control" id="inputYears" placeholder="ans">
             </div>
         </div>
 
