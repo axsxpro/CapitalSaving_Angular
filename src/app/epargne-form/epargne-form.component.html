@@ -5,11 +5,12 @@
         <!-- selection du livret  -->
         <div class="mb-3">
             <label for="disabledSelect" class="form-label">Type de Livret/Compte</label>
-            <select id="disabledSelect" class="form-select" (change)="updateMinEpargne($event)">
-                <option value=10>Livret A</option>
-                <option value=10>Livret de développement durable et solidaire (LDDS)</option>
-                <option value=30>Livret d'épargne populaire (LEP)</option>
-                <option value=225>Plan d'épargne logement (PEL)</option>
+            <select id="disabledSelect" class="form-select" (change)="updateCapitalxinterestRate($event)">
+                <option></option>
+                <option value=10 name="LivretA">Livret A</option>
+                <option value=10 name="LDDS">Livret de développement durable et solidaire (LDDS)</option>
+                <option value=30 name="LEP">Livret d'épargne populaire (LEP)</option>
+                <option value=225 name="PEL">Plan d'épargne logement (PEL)</option>
             </select>
         </div>
 
@@ -17,10 +18,11 @@
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputCapital">Capital initial</label>
-                <input formControlName="capital" type="text" class="form-control" id="inputCapital" placeholder="€">
+                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital" placeholder="€">
             </div>
         </div>
 
+<div>
         <!-- input montant du placement -->
         <div class="mb-3">
             <div class="form-group">
@@ -32,14 +34,14 @@
         <!-- mois/année check -->
         <div class="mb-3">
             <div>
-                <input formControlName="month" type="radio" class="btn-check" name="options-base" id="option5"
-                    autocomplete="off" checked>
+                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked (change)="selectSavingsFrequency('month')">
                 <label class="btn" for="option5">Mois</label>
 
-                <input formControlName="years" type="radio" class="btn-check" name="options-base" id="option6"
-                    autocomplete="off">
+                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" (change)="selectSavingsFrequency('years')">
                 <label class="btn" for="option6">Année</label>
             </div>
+        </div>
+
         </div>
 
         <!-- Durée de placement  -->
