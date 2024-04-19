@@ -34,10 +34,10 @@
         <!-- mois/année check -->
         <div class="mb-3">
             <div>
-                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked (change)="selectSavingsFrequency('month')">
+                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked (click)="selectSavingsFrequency('month')">
                 <label class="btn" for="option5">Mois</label>
 
-                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" (change)="selectSavingsFrequency('years')">
+                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" (click)="selectSavingsFrequency('years')">
                 <label class="btn" for="option6">Année</label>
             </div>
         </div>
