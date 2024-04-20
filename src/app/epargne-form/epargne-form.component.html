@@ -14,42 +14,48 @@
             </select>
         </div>
 
-        <!-- input montant du capital -->
-        <div class="mb-3">
-            <div class="form-group">
-                <label for="inputCapital">Capital initial</label>
-                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital" placeholder="€">
-            </div>
-        </div>
-
-<div>
-        <!-- input montant du placement -->
-        <div class="mb-3">
-            <div class="form-group">
-                <label for="inputSavingAmount">Montant épargné</label>
-                <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount" placeholder="€">
-            </div>
-        </div>
-
-        <!-- mois/année check -->
-        <div class="mb-3">
-            <div>
-                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked (click)="selectSavingsFrequency('month')">
-                <label class="btn" for="option5">Mois</label>
-
-                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" (click)="selectSavingsFrequency('years')">
-                <label class="btn" for="option6">Année</label>
-            </div>
-        </div>
-
-        </div>
-
         <!-- Durée de placement  -->
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputYears">Durée du placement :</label>
-                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control" id="inputYears" placeholder="ans">
+                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control"
+                    id="inputYears" placeholder="ans">
             </div>
+        </div>
+
+        <!-- input montant du capital -->
+        <div class="mb-3">
+            <div class="form-group">
+                <label for="inputCapital">Capital initial</label>
+                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital"
+                    placeholder="€">
+            </div>
+        </div>
+
+        <div>
+            <!-- input montant du placement -->
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="inputSavingAmount">Montant épargné</label>
+                    <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount"
+                        placeholder="€">
+                </div>
+            </div>
+
+            <!-- mois/année check -->
+            <div class="mb-3">
+            <label for="inputSavingAmount">Fréquence versement</label>
+                <div>
+                    <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off"
+                        (click)="selectSavingsFrequency('month')">
+                    <label class="btn" for="option5">Mois</label>
+
+                    <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off"
+                        (click)="selectSavingsFrequency('years')">
+                    <label class="btn" for="option6">Année</label>
+                </div>
+            </div>
+
         </div>
 
         <button type="submit" class="btn btn-primary">Calculer</button>
