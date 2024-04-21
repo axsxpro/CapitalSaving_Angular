@@ -9,12 +9,15 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 export class EpargneFormComponent {
 
+  formSubmitted: boolean = false;
+
   // initialisation du formulaire 
   epargneForm: FormGroup = new FormGroup({
 
-    inputCapital: new FormControl(),
-    savingsAmount: new FormControl('', [Validators.min(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
-    savingsDuration: new FormControl()
+    option: new FormControl("", [Validators.required]),
+    inputCapital: new FormControl("", [Validators.required, Validators.min(0)]),
+    savingsAmount: new FormControl("", [Validators.required, Validators.min(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
+    savingsDuration: new FormControl("", [Validators.required])
 
   });
 
@@ -97,80 +100,85 @@ export class EpargneFormComponent {
   // Méthode appelée lors de la soumission du formulaire
   calculateEpargne() {
 
+    this.formSubmitted = true;
 
     let initialSolde = parseFloat(this.inputCapital.value);
     let cummulativeSolde = parseFloat(this.inputCapital.value); // convertir la valeur en type number car la valeur renvoyé est de type string
     let savingsAmount = parseFloat(this.savingsAmount.value);
     var totalMonth = this.frequencyMonth * this.savingsDuration.value; // total des mois
     var monthInterestRate = this.interestRate / totalMonth; //taux d'intéret du mois
-    
-    
-    //calcul de l'epargne pour versement par mois
-    if (this.frequencyMonth) {
 
-    //calcul des versements cummulés
-    this.cumulativeSavings = initialSolde + ( savingsAmount * totalMonth);
+    if (this.epargneForm.valid) {
 
-      for (let month = 1; month <= totalMonth; month++) {
+      //calcul de l'epargne pour versement par mois
+      if (this.frequencyMonth) {
 
-        // Calcul montant des intérêts pour le mois en cours -> solde * (tauxIntéret% / 12 mois) = interet du mois
-        var amountInterestMonth = cummulativeSolde * monthInterestRate;
+        //calcul des versements cummulés
+        this.cumulativeSavings = initialSolde + (savingsAmount * totalMonth);
 
-        // total des intérets cummulés 
-        this.cumulativeInterest += amountInterestMonth;
+        for (let month = 1; month <= totalMonth; month++) {
 
-        // Ajouter le montant épargné et les intérets au solde précédent -> 
-        cummulativeSolde += savingsAmount + amountInterestMonth;
+          // Calcul montant des intérêts pour le mois en cours -> solde * (tauxIntéret% / 12 mois) = interet du mois
+          var amountInterestMonth = cummulativeSolde * monthInterestRate;
+
+          // total des intérets cummulés 
+          this.cumulativeInterest += amountInterestMonth;
+
+          // Ajouter le montant épargné et les intérets au solde précédent -> 
+          cummulativeSolde += savingsAmount + amountInterestMonth;
+
+        }
+
+        // total de l'épargne avec intéret
+        this.totalSavingsxInterests = cummulativeSolde;
+
+        console.log(this.totalSavingsxInterests);
+        console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
+        console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
+        console.log('valeur frequence mois' + this.frequencyMonth, typeof this.frequencyMonth);
+        console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
+        console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
+
+
+      } else if (this.frequencyYears) {
+
+
+        var totalYears = this.savingsDuration.value;
+        var yearInterestRate: number = 0;
+
+        //calcul des versements cummulés
+        this.cumulativeSavings = initialSolde + (savingsAmount * totalYears);
+
+        for (let year = 1; year <= totalYears; year++) {
+
+          // solde cummulé + montant versement
+          cummulativeSolde += savingsAmount;
+
+          //calcul du taux d'intéret à l'année
+          yearInterestRate = cummulativeSolde * this.interestRate;
+
+          this.cumulativeInterest += yearInterestRate;
+
+          cummulativeSolde += yearInterestRate;
+
+        }
+
+        this.totalSavingsxInterests = cummulativeSolde;
+
+        console.log(this.totalSavingsxInterests);
+        console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
+        console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
+        console.log('valeur frequence année' + this.frequencyYears, typeof this.frequencyYears);
+        console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
+        console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
+
 
       }
 
-      // total de l'épargne avec intéret
-      this.totalSavingsxInterests = cummulativeSolde;
-
-    console.log(this.totalSavingsxInterests);
-    console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
-    console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
-    console.log('valeur frequence mois' + this.frequencyMonth, typeof this.frequencyMonth);
-    console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
-    console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
-
-
-    } else if (this.frequencyYears) {
-
-
-    var totalYears = this.savingsDuration.value;
-    var yearInterestRate : number = 0;
-
-    //calcul des versements cummulés
-    this.cumulativeSavings = initialSolde + ( savingsAmount * totalYears);
-
-    for (let year = 1; year <= totalYears; year++) {
-
-    // solde cummulé + montant versement
-    cummulativeSolde += savingsAmount; 
-    
-    //calcul du taux d'intéret à l'année
-    yearInterestRate = cummulativeSolde * this.interestRate;
-
-    this.cumulativeInterest += yearInterestRate;
-    
-    cummulativeSolde += yearInterestRate;
-
     }
-
-    this.totalSavingsxInterests = cummulativeSolde;
-
-    console.log(this.totalSavingsxInterests);
-    console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
-    console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
-    console.log('valeur frequence année' + this.frequencyYears, typeof this.frequencyYears);
-    console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
-    console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
-
 
   }
 
-}
 
 
 }

@@ -5,21 +5,22 @@
         <!-- selection du livret  -->
         <div class="mb-3">
             <label for="disabledSelect" class="form-label">Type de Livret/Compte</label>
-            <select id="disabledSelect" class="form-select" (change)="updateCapitalxinterestRate($event)">
-                <option></option>
+            <select formControlName="option" id="disabledSelect" class="form-select" (change)="updateCapitalxinterestRate($event)">
                 <option value=10 name="LivretA">Livret A</option>
                 <option value=10 name="LDDS">Livret de développement durable et solidaire (LDDS)</option>
                 <option value=30 name="LEP">Livret d'épargne populaire (LEP)</option>
                 <option value=225 name="PEL">Plan d'épargne logement (PEL)</option>
             </select>
+                            <div *ngIf="formSubmitted">
+                <span *ngIf="epargneForm.get('option')?.errors?.['required']" class="text-danger">Veuillez selectionner un livret</span>
+                </div>
         </div>
 
         <!-- Durée de placement  -->
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputYears">Durée du placement :</label>
-                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control"
-                    id="inputYears" placeholder="ans">
+                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control" id="inputYears" placeholder="ans">
             </div>
         </div>
 
@@ -27,8 +28,10 @@
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputCapital">Capital initial</label>
-                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital"
-                    placeholder="€">
+                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital" placeholder="€">
+                <div *ngIf="formSubmitted">
+                <span *ngIf="epargneForm.get('inputCapital')?.errors?.['required']" class="text-danger">Champs vide</span>
+                </div>
             </div>
         </div>
 
@@ -37,14 +40,16 @@
             <div class="mb-3">
                 <div class="form-group">
                     <label for="inputSavingAmount">Montant épargné</label>
-                    <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount"
-                        placeholder="€">
+                    <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount" placeholder="€">
+                    <div *ngIf="formSubmitted">
+                    <span *ngIf="epargneForm.controls['savingsAmount'].errors?.['required']" class="text-danger">Champs vide</span>
+                    </div>
                 </div>
             </div>
 
             <!-- mois/année check -->
             <div class="mb-3">
-            <label for="inputSavingAmount">Fréquence versement</label>
+                <label for="inputSavingAmount">Fréquence versement</label>
                 <div>
                     <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off"
                         (click)="selectSavingsFrequency('month')">
