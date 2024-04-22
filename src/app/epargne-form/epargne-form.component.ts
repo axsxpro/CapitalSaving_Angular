@@ -10,6 +10,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class EpargneFormComponent {
 
   formSubmitted: boolean = false;
+  optionSelected: boolean = false;
 
   // initialisation du formulaire 
   epargneForm: FormGroup = new FormGroup({
@@ -17,7 +18,7 @@ export class EpargneFormComponent {
     option: new FormControl("", [Validators.required]),
     inputCapital: new FormControl("", [Validators.required, Validators.min(0)]),
     savingsAmount: new FormControl("", [Validators.required, Validators.min(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
-    savingsDuration: new FormControl("", [Validators.required])
+    savingsDuration: new FormControl("", [Validators.required]),
 
   });
 
@@ -87,10 +88,12 @@ export class EpargneFormComponent {
     if (frequency === 'month') {
 
       this.frequencyMonth = 12;
+      this.optionSelected = true;
 
     } else if (frequency === 'years') {
 
       this.frequencyYears = this.savingsDuration.value;
+      this.optionSelected = true;
 
     }
 
