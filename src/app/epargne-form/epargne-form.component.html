@@ -8,7 +8,7 @@
             <select formControlName="option" id="disabledSelect" class="form-select"
                 (change)="updateCapitalxinterestRate($event)">
                 <option value=10 name="LivretA">Livret A</option>
-                <option value=10 name="LDDS">Livret de développement durable et solidaire (LDDS)</option>
+                <option value=15 name="LDDS">Livret de développement durable et solidaire (LDDS)</option>
                 <option value=30 name="LEP">Livret d'épargne populaire (LEP)</option>
                 <option value=225 name="PEL">Plan d'épargne logement (PEL)</option>
             </select>
@@ -38,8 +38,8 @@
                 <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital"
                     placeholder="€">
                 <div *ngIf="formSubmitted">
-                    <span *ngIf="epargneForm.get('inputCapital')?.errors?.['required']" class="text-danger">Champs
-                        vide</span>
+                    <span *ngIf="epargneForm.get('inputCapital')?.errors?.['required']" class="text-danger">Champs vide</span>
+                    <span *ngIf="epargneForm.get('inputCapital')?.errors?.['min']" class="text-danger">La valeur du capital initial doit être supérieure ou égale à zéro.</span>
                 </div>
             </div>
         </div>

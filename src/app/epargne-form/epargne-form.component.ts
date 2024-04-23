@@ -16,8 +16,8 @@ export class EpargneFormComponent {
   epargneForm: FormGroup = new FormGroup({
 
     option: new FormControl("", [Validators.required]),
-    inputCapital: new FormControl("", [Validators.required, Validators.min(0)]),
-    savingsAmount: new FormControl("", [Validators.required, Validators.min(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
+    inputCapital: new FormControl("", [Validators.required, Validators.min(0), Validators.max(0)]),
+    savingsAmount: new FormControl("", [Validators.required, Validators.min(0), Validators.max(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
     savingsDuration: new FormControl("", [Validators.required]),
 
   });
@@ -43,45 +43,64 @@ export class EpargneFormComponent {
 
     // Extraire la valeur de l'option sélectionnée
     let selectedOption = parseFloat(event.target.value);
-    console.log('montant minimal livret' + selectedOption, typeof selectedOption);
-    let nameOption = event.target.selectedOptions[0].getAttribute('name');
+    let nameOption = event.target.selectedOptions[0].getAttribute('name'); //selection du nom de l'option
+    let maxAmount = 0;
+
 
     // Mettre à jour le taux d'intérêt en fonction de l'option sélectionnée
     if (nameOption === 'LivretA') {
+
       this.interestRate = 0.03;
+      maxAmount = 22950;
+
     } else if (nameOption === 'LDDS') {
+
       this.interestRate = 0.03;
+      maxAmount = 12000;
+
     } else if (nameOption === 'LEP') {
+
       this.interestRate = 0.05;
+      maxAmount = 10000;
+
     } else if (nameOption === 'PEL') {
+
       this.interestRate = 0.0225;
+      maxAmount = 61200;
+
     } else {
+
       this.interestRate = 0;
-    }
-
-    let inputCapital = document.getElementById('inputCapital');
-
-    // si il n' y a pas de value selectionnée 
-    if (!selectedOption) {
-
-      if (inputCapital) {
-        inputCapital.setAttribute('placeholder', '€'); // Réinitialiser le placeholder à €
-      }
-
-      return; // Sortir de la méthode si l'option sélectionnée est vide
     }
 
     // modification de la valeur de l'input
     this.inputCapital.setValue(''); // Réinitialiser la valeur de l'input à vide
     this.inputCapital.setValidators([Validators.min(selectedOption)]);// modification de la contrainte minimale de l'input en fonction de l'option
-    //this.epargneForm.controls['capital'].updateValueAndValidity()
+    this.inputCapital.setValidators([Validators.max(maxAmount)]);
 
-    // Modifier le placeholder en fonction de la valeur sélectionnée
-    if (inputCapital) {
-      inputCapital.setAttribute('placeholder', 'Capital minimum de : ' + selectedOption + '€');
+
+    let inputCapital = document.getElementById('inputCapital');
+
+    // si il n' y a pas de value selectionnée 
+    if (!selectedOption) {
+      
+      if (inputCapital) {
+        inputCapital.setAttribute('placeholder', '€'); // Réinitialiser le placeholder à €
+      }
+      return; // Sortir de la méthode si l'option sélectionnée est vide
+
+    } else {
+      // Modifier le placeholder en fonction de la valeur sélectionnée
+      if (inputCapital) {
+        inputCapital.setAttribute('placeholder', 'Capital minimum: ' + selectedOption + '€/ maximum: ' + maxAmount + '€');
+      }
+
     }
 
+    console.log('montant minimal livret' + selectedOption, typeof selectedOption + 'montant maximal: ' + maxAmount);
+
   }
+
 
   selectSavingsFrequency(frequency: string) {
 
