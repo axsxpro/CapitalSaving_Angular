@@ -5,16 +5,14 @@
         <!-- selection du livret  -->
         <div class="mb-3">
             <label for="disabledSelect" class="form-label">Type de Livret/Compte</label>
-            <select formControlName="option" id="disabledSelect" class="form-select"
-                (change)="updateCapitalxinterestRate($event)">
+            <select formControlName="option" id="disabledSelect" class="form-select" (change)="updateCapitalxinterestRate($event)">
                 <option value=10 name="LivretA">Livret A</option>
                 <option value=15 name="LDDS">Livret de développement durable et solidaire (LDDS)</option>
                 <option value=30 name="LEP">Livret d'épargne populaire (LEP)</option>
                 <option value=225 name="PEL">Plan d'épargne logement (PEL)</option>
             </select>
-            <div *ngIf="formSubmitted">
-                <span *ngIf="epargneForm.get('option')?.errors?.['required']" class="text-danger">Veuillez selectionner
-                    un livret</span>
+            <div *ngIf="formSubmitted && !epargneForm.valid">
+                <span *ngIf="epargneForm.get('option')?.errors?.['required']" class="text-danger">Veuillez selectionner un livret</span>
             </div>
         </div>
 
@@ -22,11 +20,9 @@
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputYears">Durée du placement :</label>
-                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control"
-                    id="inputYears" placeholder="ans">
-                <div *ngIf="formSubmitted">
-                    <span *ngIf="epargneForm.get('savingsDuration')?.errors?.['required']" class="text-danger">Champs
-                        vide</span>
+                <input formControlName="savingsDuration" type="number" min="0" max="20" class="form-control" id="inputYears" placeholder="ans">
+                <div *ngIf="formSubmitted && !epargneForm.valid">
+                    <span *ngIf="epargneForm.get('savingsDuration')?.errors?.['required']" class="text-danger">Champs vide</span>
                 </div>
             </div>
         </div>
@@ -35,46 +31,37 @@
         <div class="mb-3">
             <div class="form-group">
                 <label for="inputCapital">Capital initial</label>
-                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital"
-                    placeholder="€">
-                <div *ngIf="formSubmitted">
+                <input formControlName="inputCapital" type="text" class="form-control" id="inputCapital" placeholder="€" (input)="hideSavingsAmount($event)"> <!-- (input): va détecter les changements dans le input-->
+                <div *ngIf="formSubmitted && !epargneForm.valid">
                     <span *ngIf="epargneForm.get('inputCapital')?.errors?.['required']" class="text-danger">Champs vide</span>
-                    <span *ngIf="epargneForm.get('inputCapital')?.errors?.['min']" class="text-danger">La valeur du capital initial doit être supérieure ou égale à zéro.</span>
+                    <span *ngIf="epargneForm.get('inputCapital')?.errors?.['min']" class="text-danger">La valeur du capital initial doit être supérieure à {{ selectedOption }} €.</span>
                 </div>
             </div>
         </div>
 
-        <div>
-            <!-- input montant du placement -->
-            <div class="mb-3">
-                <div class="form-group">
-                    <label for="inputSavingAmount">Montant épargné</label>
-                    <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount"
-                        placeholder="€">
-                    <div *ngIf="formSubmitted">
-                        <span *ngIf="epargneForm.controls['savingsAmount'].errors?.['required']"
-                            class="text-danger">Champs vide</span>
-                    </div>
+
+        <!-- input montant du placement -->
+        <div class="mb-3" *ngIf="showInput">
+            <div class="form-group">
+                <label for="inputSavingAmount">Montant épargné</label>
+                <input formControlName="savingsAmount" type="text" class="form-control" id="inputSavingAmount" placeholder="€">
+                <div *ngIf="formSubmitted && !epargneForm.valid">
+                    <span *ngIf="epargneForm.controls['savingsAmount'].errors?.['required']" class="text-danger">Champs vide</span>
                 </div>
             </div>
+        </div>
 
-            <!-- mois/année check -->
-            <div class="mb-3">
-                <label for="inputSavingAmount">Fréquence versement</label>
-                <div>
-                    <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off"
-                        (click)="selectSavingsFrequency('month')">
-                    <label class="btn" for="option5">Mois</label>
+        <!-- mois/année check -->
+        <div class="mb-3" *ngIf="showInput">
+            <label for="inputSavingAmount">Fréquence versement</label>
+            <div>
+                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" (click)="selectSavingsFrequency('month')">
+                <label class="btn" for="option5">Mois</label>
 
-                    <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off"
-                        (click)="selectSavingsFrequency('years')">
-                    <label class="btn" for="option6">Année</label>
-                </div>
-                <div *ngIf="formSubmitted && !optionSelected" class="text-danger">
-                    Sélectionnez au moins une option.
-                </div>
+                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" (click)="selectSavingsFrequency('years')">
+                <label class="btn" for="option6">Année</label>
             </div>
-
+            <div *ngIf="formSubmitted && !optionFrequency && !epargneForm.valid" class="text-danger"> Sélectionnez au moins une option.</div>
         </div>
 
         <button type="submit" class="btn btn-primary">Calculer</button>

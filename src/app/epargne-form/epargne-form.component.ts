@@ -10,24 +10,27 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class EpargneFormComponent {
 
   formSubmitted: boolean = false;
-  optionSelected: boolean = false;
+  optionFrequency: boolean = false;
 
   // initialisation du formulaire 
   epargneForm: FormGroup = new FormGroup({
 
     option: new FormControl("", [Validators.required]),
-    inputCapital: new FormControl("", [Validators.required, Validators.min(0), Validators.max(0)]),
-    savingsAmount: new FormControl("", [Validators.required, Validators.min(0), Validators.max(0)]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
+    inputCapital: new FormControl("", [Validators.required, Validators.min(0)]), // Validators.max() : valeur maximum du champs
+    savingsAmount: new FormControl("", [Validators.required]), //[Validators.min(0)]:  la valeur saisie dans le champ du montant épargné est supérieure ou égale à zéro.
     savingsDuration: new FormControl("", [Validators.required]),
 
   });
 
 
-  //déclaration des attributs du formulaire
+  //déclaration des attributs/récupération des inputs du formulaire
+  selectedOption: number = 0;
+  inputCapitalValue: number = 0;
   public interestRate: number = 0;
   public inputCapital = this.epargneForm.controls['inputCapital']; // ou this.epargneForm.get('inputCapital')
   public savingsAmount = this.epargneForm.controls['savingsAmount'];
   public savingsDuration = this.epargneForm.controls['savingsDuration'];
+
 
   //déclaration des attributs pour le résultat du calcul de l'épargne
   public frequencyMonth: number = 0;
@@ -37,53 +40,57 @@ export class EpargneFormComponent {
   public cumulativeInterest: number = 0;
   public cumulativeSavings: number = 0;
 
+  maxAmount: number = 0;
+  showInput: boolean = true;
 
 
   updateCapitalxinterestRate(event: any) {
 
     // Extraire la valeur de l'option sélectionnée
-    let selectedOption = parseFloat(event.target.value);
+    this.selectedOption = parseFloat(event.target.value);
     let nameOption = event.target.selectedOptions[0].getAttribute('name'); //selection du nom de l'option
-    let maxAmount = 0;
 
 
     // Mettre à jour le taux d'intérêt en fonction de l'option sélectionnée
     if (nameOption === 'LivretA') {
 
       this.interestRate = 0.03;
-      maxAmount = 22950;
+      this.maxAmount = 22950;
 
     } else if (nameOption === 'LDDS') {
 
       this.interestRate = 0.03;
-      maxAmount = 12000;
+      this.maxAmount = 12000;
 
     } else if (nameOption === 'LEP') {
 
       this.interestRate = 0.05;
-      maxAmount = 10000;
+      this.maxAmount = 10000;
 
     } else if (nameOption === 'PEL') {
 
       this.interestRate = 0.0225;
-      maxAmount = 61200;
+      this.maxAmount = 61200;
 
     } else {
 
       this.interestRate = 0;
     }
 
-    // modification de la valeur de l'input
-    this.inputCapital.setValue(''); // Réinitialiser la valeur de l'input à vide
-    this.inputCapital.setValidators([Validators.min(selectedOption)]);// modification de la contrainte minimale de l'input en fonction de l'option
-    this.inputCapital.setValidators([Validators.max(maxAmount)]);
+    // Définir les validateurs pour le champ inputCapital
+    let validators = [Validators.required];
+    if (this.selectedOption) {
+      validators.push(Validators.min(this.selectedOption));
+    }
+    this.inputCapital.setValidators(validators);
+    this.inputCapital.updateValueAndValidity();
 
 
     let inputCapital = document.getElementById('inputCapital');
 
     // si il n' y a pas de value selectionnée 
-    if (!selectedOption) {
-      
+    if (!this.selectedOption) {
+
       if (inputCapital) {
         inputCapital.setAttribute('placeholder', '€'); // Réinitialiser le placeholder à €
       }
@@ -92,12 +99,37 @@ export class EpargneFormComponent {
     } else {
       // Modifier le placeholder en fonction de la valeur sélectionnée
       if (inputCapital) {
-        inputCapital.setAttribute('placeholder', 'Capital minimum: ' + selectedOption + '€/ maximum: ' + maxAmount + '€');
+        inputCapital.setAttribute('placeholder', 'Capital minimum: ' + this.selectedOption + '€/ maximum: ' + this.maxAmount + '€');
       }
 
     }
 
-    console.log('montant minimal livret' + selectedOption, typeof selectedOption + 'montant maximal: ' + maxAmount);
+    console.log(nameOption + ' -> montant minimal livret : ' + this.selectedOption, typeof this.selectedOption + ' montant maximal: ' + this.maxAmount, typeof this.maxAmount);
+
+  }
+
+
+  hideSavingsAmount(event: any) {
+
+    this.inputCapitalValue = parseFloat(event.target.value);
+    console.log(this.inputCapitalValue);
+
+    if (this.inputCapitalValue >= this.maxAmount) {
+
+      this.showInput = false;
+
+if (this.savingsAmount && this.savingsDuration) {
+
+      this.savingsAmount.clearValidators();
+      this.savingsDuration.clearValidators();
+      this.savingsAmount.updateValueAndValidity();
+      this.savingsDuration.updateValueAndValidity();
+}
+
+    } else {
+
+      this.showInput = true;
+    }
 
   }
 
@@ -107,12 +139,13 @@ export class EpargneFormComponent {
     if (frequency === 'month') {
 
       this.frequencyMonth = 12;
-      this.optionSelected = true;
+      this.optionFrequency = true;
 
     } else if (frequency === 'years') {
 
       this.frequencyYears = this.savingsDuration.value;
-      this.optionSelected = true;
+      console.log(this.savingsDuration.value, typeof this.savingsDuration.value)
+      this.optionFrequency = true;
 
     }
 
@@ -122,20 +155,21 @@ export class EpargneFormComponent {
   // Méthode appelée lors de la soumission du formulaire
   calculateEpargne() {
 
-    this.formSubmitted = true;
-
-    let initialSolde = parseFloat(this.inputCapital.value);
-    let cummulativeSolde = parseFloat(this.inputCapital.value); // convertir la valeur en type number car la valeur renvoyé est de type string
-    let savingsAmount = parseFloat(this.savingsAmount.value);
-    var totalMonth = this.frequencyMonth * this.savingsDuration.value; // total des mois
-    var monthInterestRate = this.interestRate / totalMonth; //taux d'intéret du mois
-
     if (this.epargneForm.valid) {
 
-      //calcul de l'epargne pour versement par mois
+      this.formSubmitted = true;
+
+      let initialSolde = parseFloat(this.inputCapital.value);
+      let cummulativeSolde = parseFloat(this.inputCapital.value); // convertir la valeur en type number car la valeur renvoyé est de type string
+      let savingsAmount = parseFloat(this.savingsAmount.value);
+      var totalMonth = this.frequencyMonth * this.savingsDuration.value; // total des mois
+      var monthInterestRate = this.interestRate / totalMonth; //taux d'intéret du mois
+
+
+      // calcul de l'épargne pour versement par mois
       if (this.frequencyMonth) {
 
-        //calcul des versements cummulés
+        // calcul des versements cummulés
         this.cumulativeSavings = initialSolde + (savingsAmount * totalMonth);
 
         for (let month = 1; month <= totalMonth; month++) {
@@ -154,21 +188,22 @@ export class EpargneFormComponent {
         // total de l'épargne avec intéret
         this.totalSavingsxInterests = cummulativeSolde;
 
-        console.log(this.totalSavingsxInterests);
-        console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
-        console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
-        console.log('valeur frequence mois' + this.frequencyMonth, typeof this.frequencyMonth);
-        console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
-        console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
+        
+        console.log('inputCapital: ' + this.inputCapital.value, typeof this.inputCapital.value);
+        console.log('durée d\'épargne: ' + this.savingsDuration.value, typeof this.savingsDuration.value);
+        console.log('taux d\'intéret: ' + this.interestRate, typeof this.interestRate);
+        console.log('frequence mois: ' + this.frequencyMonth, typeof this.frequencyMonth);
+        console.log('intérets cummulés: ' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
+        console.log('versement cummulés: ' + this.cumulativeSavings, typeof this.cumulativeSavings);
+        console.log('total épargne par mois: ' + this.totalSavingsxInterests);
 
 
       } else if (this.frequencyYears) {
 
-
         var totalYears = this.savingsDuration.value;
         var yearInterestRate: number = 0;
 
-        //calcul des versements cummulés
+        // calcul des versements cummulés
         this.cumulativeSavings = initialSolde + (savingsAmount * totalYears);
 
         for (let year = 1; year <= totalYears; year++) {
@@ -176,7 +211,7 @@ export class EpargneFormComponent {
           // solde cummulé + montant versement
           cummulativeSolde += savingsAmount;
 
-          //calcul du taux d'intéret à l'année
+          // calcul du taux d'intéret à l'année
           yearInterestRate = cummulativeSolde * this.interestRate;
 
           this.cumulativeInterest += yearInterestRate;
@@ -187,20 +222,70 @@ export class EpargneFormComponent {
 
         this.totalSavingsxInterests = cummulativeSolde;
 
-        console.log(this.totalSavingsxInterests);
-        console.log('valeur inputCapital' + this.inputCapital.value, typeof this.inputCapital.value);
-        console.log('valeur taux d\intéret' + this.interestRate, typeof this.interestRate);
-        console.log('valeur frequence année' + this.frequencyYears, typeof this.frequencyYears);
-        console.log('intérets cummulés' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
-        console.log('versement cummulés' + this.cumulativeSavings, typeof this.cumulativeSavings);
+        console.log('inputCapital: ' + this.inputCapital.value, typeof this.inputCapital.value);
+        console.log('durée d\'épargne: ' + this.savingsDuration.value, typeof this.savingsDuration.value);
+        console.log('taux d\intéret: ' + this.interestRate, typeof this.interestRate);
+        console.log('frequence année: ' + this.frequencyYears, typeof this.frequencyYears);
+        console.log('cummulés: ' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
+        console.log('versement cummulés: ' + this.cumulativeSavings, typeof this.cumulativeSavings);
+        console.log('total épargne par année: ' + this.totalSavingsxInterests);
 
+      } else  {
+
+        var totalYears = this.savingsDuration.value;
+        var interestRate = this.interestRate
+        var yearInterestRate: number = 0;
+        let initialSolde = parseFloat(this.inputCapital.value);
+
+        for (let year = 1; year <= totalYears; year++) {
+
+          yearInterestRate = initialSolde * interestRate;
+
+          this.cumulativeInterest += yearInterestRate;
+
+          cummulativeSolde += yearInterestRate;
+
+        }
+
+        this.totalSavingsxInterests = cummulativeSolde;
+
+        console.log('inputCapital: ' + this.inputCapital.value, typeof this.inputCapital.value);
+        console.log('durée d\'épargne: ' + this.savingsDuration.value, typeof this.savingsDuration.value);
+        console.log('taux d\intéret: ' + this.interestRate, typeof this.interestRate);
+        console.log('intérets cummulés: ' + this.cumulativeInterest.toFixed(2), typeof this.cumulativeInterest);
+        console.log('versement cummulés: ' + this.cumulativeSavings, typeof this.cumulativeSavings);
+        console.log('total épargne si plafond dépassé: ' + this.totalSavingsxInterests);
 
       }
 
-    }
+    } else {
 
+      // Afficher les détails de l'erreur dans la console pour chaque champ invalide
+      console.log("Erreur de formulaire : ", this.epargneForm.errors);
+      if (this.epargneForm.controls['option'].invalid) {
+        console.log("Erreur dans le champ 'Type de Livret/Compte'");
+      }
+      if (this.epargneForm.controls['savingsDuration'].invalid) {
+        console.log("Erreur dans le champ 'Durée du placement'");
+      }
+      if (this.epargneForm.controls['inputCapital'].invalid) {
+        const errors = this.epargneForm.controls['inputCapital'].errors;
+        console.log("Erreur dans le champ 'capital initial':", errors);
+      }
+      if (this.epargneForm.controls['savingsAmount'].invalid) {
+        const errors = this.epargneForm.controls['savingsAmount'].errors;
+        console.log("Erreur dans le champ 'Montant épargné':", errors);
+      }
+      if (!this.optionFrequency) {
+        console.log("Sélectionnez au moins une option de fréquence de versement");
+      }
+    }
   }
 
 
-
 }
+
+
+
+
+
